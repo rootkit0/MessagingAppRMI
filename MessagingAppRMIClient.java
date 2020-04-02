@@ -40,20 +40,22 @@ public class MessagingAppRMIClient {
 							client_username = user_login;
 							client_status = true;
 						}
-						else {
-							System.out.println("Usuario o contrasena incorrectos");
-						}
                         break;
 					case "Logout":
-						
+						if(servicioMsg.logout(client_username)) {
+							client_username = "";
+							client_status = false;
+						}
                         break;
                     case "NewUser":
                         String user_newUser = st.nextToken();
 						String pass_newUser = st.nextToken();
+						String group_newUser = "";
 						servicioMsg.newUser(user_newUser, pass_newUser);
                         if(st.hasMoreTokens()) {
-							String group_newUser = st.nextToken();
-                        }
+							group_newUser = st.nextToken();
+							servicioMsg.joinGroup(user_newUser, group_newUser);
+						}
                         break;
 					case "SendMsg":
 						String text_sendMsg = "";
@@ -61,21 +63,24 @@ public class MessagingAppRMIClient {
                         if(st.nextToken() == "-g") {
 							String group_sendMsg = st.nextToken();
 							text_sendMsg = st.nextToken();
-							
+							servicioMsg.sendMsgGroup(client_username, group_sendMsg, text_sendMsg);
 						}
 						//Enviar mensaje a un usuario
 						else {
 							String user_sendMsg = st.nextToken();
 							text_sendMsg = st.nextToken();
+							servicioMsg.sendMsgUser(client_username, user_sendMsg, text_sendMsg);
 						}
 						break;
 					case "GetMsg":
 						break;
                     case "NewGroup":
-                        String group_newGroup = st.nextToken();
+						String group_newGroup = st.nextToken();
+						servicioMsg.newGroup(group_newGroup);
                         break;
                     case "JoinGroup":
-                        String group_joinGroup = st.nextToken();
+						String group_joinGroup = st.nextToken();
+						servicioMsg.joinGroup(client_username, group_joinGroup);
                         break;
                     case "Exit":
 

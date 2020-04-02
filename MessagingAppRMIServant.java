@@ -28,8 +28,23 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		return false;
 	}
 
-    public void logout(String username) throws RemoteException {
-		
+    public boolean logout(String username) throws RemoteException {
+		User aux_user = getUser(username);
+		//Check if the user exists
+		if(aux_user != null) {
+			//Check if the user is online
+			if(aux_user.getStatus() ==  true) {
+				aux_user.setStatus(false);
+				return true;
+			}
+			else {
+				System.out.println("User is already offline");
+			}
+		}
+		else {
+			System.out.println("User does not exist");
+		}
+		return false;
 	}
 
     public void newUser(String username, String password) throws RemoteException {
@@ -78,11 +93,21 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 	}
 
     public void getMsg(String username) throws RemoteException {
+		ArrayList<Message> userMessages = new ArrayList<Message>();
 
 	}
 
     public void newGroup(String group) throws RemoteException {
-
+		Group new_group = new Group(group);
+		//Check if the group exists
+		if(getGroup(group) != null) {
+			//Add the group to the groups database
+			this.groups_db.add(new_group);
+		}
+		else {
+			//Group already exists
+			System.out.println("Group already exists, choose another group name.");
+		}
 	}
 
     public void joinGroup(String username, String group) throws RemoteException {
