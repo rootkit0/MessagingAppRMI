@@ -29,5 +29,13 @@ public class User {
 
     public void joinGroup(Group group) {
         this.userGroups.add(group);
-    }   
+    }
+
+    public ArrayList<Message> getMessages() {
+        return this.userMessages;
+    }
+
+    public ArrayList<Group> getGroups() {
+        return this.userGroups;
+    }
 }

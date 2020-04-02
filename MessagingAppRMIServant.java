@@ -2,7 +2,6 @@ import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
-// Implementacion Servidor
 public class MessagingAppRMIServant extends UnicastRemoteObject implements MessagingAppRMI {
 	//Init variables
 	private static final long serialVersionUID = 1;
@@ -94,12 +93,36 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 
     public void getMsg(String username) throws RemoteException {
 		ArrayList<Message> userMessages = new ArrayList<Message>();
-
+		ArrayList<Group> userGroups = new ArrayList<Group>();
+		User aux_user = getUser(username);
+		//Check if the user exists
+		if(aux_user != null) {
+			//Check if the user is online
+			if(aux_user.getStatus() == true) {
+				//Get all user messages
+				userMessages.addAll(aux_user.getMessages());
+				//Get all the groups where user subscribed
+				userGroups.addAll(aux_user.getGroups());
+				Iterator<Group> groups_itr = userGroups.iterator();
+				//Iterate through the groups
+				while(groups_itr.hasNext()) {
+					Group nextGroup = groups_itr.next();
+					//Add all the messages of each group
+					userMessages.addAll(nextGroup.getMessages());
+				}
+			}
+			else {
+				System.out.println("User is offline, couldn't get the messages");
+			}
+		}
+		else {
+			System.out.println("User does not exist, couldn't get the messages");
+		}
 	}
 
     public void newGroup(String group) throws RemoteException {
 		Group new_group = new Group(group);
-		//Check if the group exists
+		//Check if the group exist
 		if(getGroup(group) != null) {
 			//Add the group to the groups database
 			this.groups_db.add(new_group);
@@ -111,7 +134,21 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 	}
 
     public void joinGroup(String username, String group) throws RemoteException {
-		
+		//Check if the user or group exist
+		User aux_user = getUser(username);
+		Group aux_group = getGroup(group);
+		if(aux_user != null && aux_group != null) {
+			//Check if user is online
+			if(aux_user.getStatus() == true) {
+				aux_user.joinGroup(aux_group);
+			}
+			else {
+				System.out.println("User is offline, couldn't join the group.");
+			}
+		}
+		else {
+			System.out.println("User or group does not exist.");
+		}
 	}
 
 	public void exit(String username) throws RemoteException {

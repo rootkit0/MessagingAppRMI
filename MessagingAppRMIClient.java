@@ -40,6 +40,9 @@ public class MessagingAppRMIClient {
 							client_username = user_login;
 							client_status = true;
 						}
+						else {
+							System.out.println("Incorrect user");
+						}
                         break;
 					case "Logout":
 						if(servicioMsg.logout(client_username)) {
@@ -84,7 +87,7 @@ public class MessagingAppRMIClient {
                         break;
                     case "Exit":
 
-                        break;
+						break;
                 }
             }
 		}

@@ -13,4 +13,8 @@ public class Group {
     public void addMessage(Message msg) {
         this.groupMessages.add(msg);
     }
+
+    public ArrayList<Message> getMessages() {
+        return this.groupMessages;
+    }
 }
