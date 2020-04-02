@@ -11,5 +11,28 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 
 	}
 	//Remote methods implementation
+	public void login() throws RemoteException {
 
+	};
+    public void logout() throws RemoteException {
+
+	};
+    public void newUser() throws RemoteException {
+
+	};
+	public void sendMsgUser() throws RemoteException {
+
+	};
+	public void sendMsgGroup() throws RemoteException {
+
+	};
+    public void getMsg() throws RemoteException {
+
+	};
+    public void newGroup() throws RemoteException {
+
+	};
+    public void joinGroup() throws RemoteException {
+		
+	};
 }
