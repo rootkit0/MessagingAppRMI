@@ -16,7 +16,7 @@ public class MessagingAppRMIClient {
 			Remote servicioRemoto = Naming.lookup(registro);
 			// Convertir a un interfaz
 			MessagingAppRMI servicioMsg = (MessagingAppRMI) servicioRemoto;
-			//Obtener input de teclados
+			//Get input from keyboard
             Scanner scan = new Scanner(System.in);
             //Exception handler
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -24,12 +24,14 @@ public class MessagingAppRMIClient {
                     scan.close();
                 }
 			});
+			//Client status
 			String client_username = "";
 			Boolean client_status = false;
 			while(true) {
-                String command = scan.nextLine();
+				String command = scan.nextLine();
                 StringTokenizer st = new StringTokenizer(command);
-                String command_type = st.nextToken();
+				String command_type = st.nextToken();
+				//Treat cases depending on command type
                 switch(command_type) {
                     case "Login":
                         String user_login = st.nextToken();
