@@ -1,6 +1,7 @@
 import java.rmi.*;
 import java.util.*;
 
+//Cliente
 public class MessagingAppRMIClient {
 	public static void main(String args[]) {
 		System.out.println("Iniciando el cliente");
@@ -15,7 +16,7 @@ public class MessagingAppRMIClient {
 			Remote servicioRemoto = Naming.lookup(registro);
 			// Convertir a un interfaz
 			MessagingAppRMI servicioMsg = (MessagingAppRMI) servicioRemoto;
-			//Get keyboard input
+			//Obtener input de teclados
             Scanner scan = new Scanner(System.in);
             //Exception handler
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -23,45 +24,58 @@ public class MessagingAppRMIClient {
                     scan.close();
                 }
 			});
+			String client_username = "";
+			Boolean client_status = false;
 			while(true) {
                 String command = scan.nextLine();
                 StringTokenizer st = new StringTokenizer(command);
                 String command_type = st.nextToken();
                 switch(command_type) {
-                    case "login":
+                    case "Login":
                         String user_login = st.nextToken();
-                        String pass_login = st.nextToken();
-                        break;
-                    case "logout":
-                        break;
-                    case "newUser":
-                        String user_newUser = st.nextToken();
-                        String pass_newUser = st.nextToken();
-                        String group_newUser = "";
-                        if(st.hasMoreTokens()) {
-                            group_newUser = st.nextToken();
-                        }
-                        break;
-                    case "sendMsg":
-                        String user_sendMsg = "";
-                        String group_sendMsg = "";
-                        if(st.nextToken() == "-g") {
-                            group_sendMsg = st.nextToken();
+						String pass_login = st.nextToken();
+						if(servicioMsg.login(user_login, pass_login)) {
+							client_username = user_login;
+							client_status = true;
 						}
 						else {
-							user_sendMsg = st.nextToken();
+							System.out.println("Usuario o contrasena incorrectos");
 						}
-                        String text_sendMsg = st.nextToken();
                         break;
-                    case "getMsg":
+					case "Logout":
+						
                         break;
-                    case "newGroup":
+                    case "NewUser":
+                        String user_newUser = st.nextToken();
+						String pass_newUser = st.nextToken();
+						servicioMsg.newUser(user_newUser, pass_newUser);
+                        if(st.hasMoreTokens()) {
+							String group_newUser = st.nextToken();
+                        }
+                        break;
+					case "SendMsg":
+						String text_sendMsg = "";
+						//Enviar mensaje a un grupo
+                        if(st.nextToken() == "-g") {
+							String group_sendMsg = st.nextToken();
+							text_sendMsg = st.nextToken();
+							
+						}
+						//Enviar mensaje a un usuario
+						else {
+							String user_sendMsg = st.nextToken();
+							text_sendMsg = st.nextToken();
+						}
+						break;
+					case "GetMsg":
+						break;
+                    case "NewGroup":
                         String group_newGroup = st.nextToken();
                         break;
-                    case "joinGroup":
+                    case "JoinGroup":
                         String group_joinGroup = st.nextToken();
                         break;
-                    case "exit":
+                    case "Exit":
 
                         break;
                 }
