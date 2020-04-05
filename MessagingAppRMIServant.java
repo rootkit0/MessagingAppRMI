@@ -71,7 +71,6 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 			//Check if the receiver is online
 			if(aux_user.getStatus() == true) {
 				//Send the message
-				aux_user.addMessage(new_message);
 			}
 			else {
 				System.out.println("User is offline, the message could not be sent");
@@ -88,39 +87,9 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		//Check if group exists
 		if(aux_group != null) {
 			//Send the message
-			aux_group.addMessage(new_message);
 		}
 		else {
 			System.out.println("Group doesn't exist, the message could not be sent");
-		}
-	}
-
-    public void getMsg(String username) throws RemoteException {
-		ArrayList<Message> userMessages = new ArrayList<Message>();
-		ArrayList<Group> userGroups = new ArrayList<Group>();
-		User aux_user = getUser(username);
-		//Check if the user exists
-		if(aux_user != null) {
-			//Check if the user is online
-			if(aux_user.getStatus() == true) {
-				//Get all user messages
-				userMessages.addAll(aux_user.getMessages());
-				//Get all the groups where user subscribed
-				userGroups.addAll(aux_user.getGroups());
-				Iterator<Group> groups_itr = userGroups.iterator();
-				//Iterate through the groups
-				while(groups_itr.hasNext()) {
-					Group nextGroup = groups_itr.next();
-					//Add all the messages of each group
-					userMessages.addAll(nextGroup.getMessages());
-				}
-			}
-			else {
-				System.out.println("User is offline, couldn't get the messages");
-			}
-		}
-		else {
-			System.out.println("User does not exist, couldn't get the messages");
 		}
 	}
 
@@ -164,7 +133,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		while(users_itr.hasNext()) {
 			User nextUsr = users_itr.next();
 			//Return user if found
-			if(nextUsr.username == username) {
+			if(nextUsr.username.equals(username)) {
 				return nextUsr;
 			}
 		}
@@ -177,7 +146,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		while(groups_itr.hasNext()) {
 			Group nextGroup = groups_itr.next();
 			//Return group if found
-			if(nextGroup.group == group) {
+			if(nextGroup.group.equals(group)) {
 				return nextGroup;
 			}
 		}

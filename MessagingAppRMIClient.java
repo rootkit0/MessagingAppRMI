@@ -72,8 +72,6 @@ public class MessagingAppRMIClient {
 							servicioMsg.sendMsgUser(client_username, user_sendMsg, text_sendMsg);
 						}
 						break;
-					case "GetMsg":
-						break;
                     case "NewGroup":
 						String group_newGroup = st.nextToken();
 						servicioMsg.newGroup(group_newGroup);
@@ -83,7 +81,6 @@ public class MessagingAppRMIClient {
 						servicioMsg.joinGroup(client_username, group_joinGroup);
                         break;
                     case "Exit":
-
 						break;
                 }
             }

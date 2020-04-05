@@ -5,7 +5,6 @@ public class User {
     public String username;
     public String password;
     private Boolean status;
-    private ArrayList<Message> userMessages = new ArrayList<Message>();
     private ArrayList<Group> userGroups = new ArrayList<Group>();
     
     //Constructor
@@ -23,16 +22,8 @@ public class User {
         this.status = status;
     }
 
-    public void addMessage(Message msg) {
-        this.userMessages.add(msg);
-    }
-
     public void joinGroup(Group group) {
         this.userGroups.add(group);
-    }
-
-    public ArrayList<Message> getMessages() {
-        return this.userMessages;
     }
 
     public ArrayList<Group> getGroups() {
