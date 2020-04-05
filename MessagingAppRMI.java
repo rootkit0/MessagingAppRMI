@@ -2,7 +2,7 @@ import java.rmi.*;
 
 public interface MessagingAppRMI extends java.rmi.Remote {
 	//Remote methods
-	public boolean login(String username, String password) throws RemoteException;
+	public boolean login(String username, String password, CallbacksListener listener) throws RemoteException;
     public boolean logout(String username) throws RemoteException;
     public void newUser(String username, String password) throws RemoteException;
 	public void sendMsgUser(String sender, String receiver, String message) throws RemoteException;

@@ -1,8 +1,13 @@
 import java.rmi.*;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
 //Cliente
-public class MessagingAppRMIClient {
+public class MessagingAppRMIClient extends UnicastRemoteObject implements CallbacksListener{
+	
+	private static MessagingAppRMI remote_object;
+	private static final long serialVersionUID = 1;
+	public MessagingAppRMIClient() throws RemoteException {};
 	public static void main(String args[]) {
 		System.out.println("Iniciando el cliente");
 		try {
@@ -27,6 +32,8 @@ public class MessagingAppRMIClient {
 			//Client status
 			String client_username = "";
 			Boolean client_status = false;
+			CallbacksListener client_listener;
+			MessagingAppRMIClient client = new MessagingAppRMIClient();
 			while(true) {
 				String command = scan.nextLine();
                 StringTokenizer st = new StringTokenizer(command);
@@ -36,7 +43,7 @@ public class MessagingAppRMIClient {
                     case "Login":
                         String user_login = st.nextToken();
 						String pass_login = st.nextToken();
-						if(servicioMsg.login(user_login, pass_login)) {
+						if(servicioMsg.login(user_login, pass_login, client)) {
 							client_username = user_login;
 							client_status = true;
 						}
@@ -94,5 +101,9 @@ public class MessagingAppRMIClient {
 		catch (Exception e) {
 			System.err.println("Error - " + e);
 		}		
+	}
+
+	public void userConnected(String username) throws RemoteException {
+		System.out.println("El usuario " + username + " se ha conectado.");
 	}
 }

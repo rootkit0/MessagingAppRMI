@@ -12,7 +12,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 	public MessagingAppRMIServant() throws RemoteException { }
 	
 	//Remote methods implementation
-	public boolean login(String username, String password) throws RemoteException {
+	public boolean login(String username, String password, CallbacksListener listener) throws RemoteException {
 		Iterator<User> users_itr = users_db.iterator();
 		int index = 0;
 		while(users_itr.hasNext()) {
@@ -20,7 +20,9 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 			if(nextUser.username.equals(username) && nextUser.password.equals(password)) {
 				System.out.println("Usuario correcto");
 				nextUser.setStatus(true);
+				nextUser.setListener(listener);
 				users_db.set(index, nextUser);
+				notifyLogin(username);
 				return true;
 			}
 			else {
@@ -38,6 +40,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 			//Check if the user is online
 			if(aux_user.getStatus() ==  true) {
 				aux_user.setStatus(false);
+				
 				return true;
 			}
 			else {
@@ -152,5 +155,22 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		}
 		//Return null if user not found
 		return null;
+	}
+
+	//Callback methods
+	public void notifyLogin(String username) {
+		Iterator<User> users_itr = users_db.iterator();
+		int index = 0;
+		while(users_itr.hasNext()) {
+			User nextUsr = users_itr.next();
+			try{
+				nextUsr.userListener.userConnected(username);
+			}
+			catch (RemoteException re) {
+				nextUsr.removeListener();
+				users_db.set(index, nextUsr);
+			}
+			++index;
+		}
 	}
 }

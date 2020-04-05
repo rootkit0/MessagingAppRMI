@@ -1,3 +1,4 @@
+import java.rmi.RemoteException;
 import java.util.*;
 
 public class User {
@@ -6,7 +7,9 @@ public class User {
     public String password;
     private Boolean status;
     private ArrayList<Group> userGroups = new ArrayList<Group>();
-    
+    //Callback
+    public CallbacksListener userListener;
+
     //Constructor
     public User(String username, String password) {
         this.username = username;
@@ -28,5 +31,13 @@ public class User {
 
     public ArrayList<Group> getGroups() {
         return this.userGroups;
+    }
+
+    public void setListener(CallbacksListener listener) {
+        this.userListener = listener;
+    }
+
+    public void removeListener() {
+        this.userListener = null;
     }
 }
