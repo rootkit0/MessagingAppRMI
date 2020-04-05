@@ -16,13 +16,17 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		Iterator<User> users_itr = users_db.iterator();
 		int index = 0;
 		while(users_itr.hasNext()) {
-			++index;
 			User nextUser = users_itr.next();
-			if(nextUser.username == username && nextUser.password == password) {
+			if(nextUser.username.equals(username) && nextUser.password.equals(password)) {
+				System.out.println("Usuario correcto");
 				nextUser.setStatus(true);
 				users_db.set(index, nextUser);
 				return true;
 			}
+			else {
+				System.out.println("El usuario no existe");
+			}
+			++index;
 		}
 		return false;
 	}
@@ -152,7 +156,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 	}
 
 	public void exit(String username) throws RemoteException {
-
+	
 	}
 
 	public User getUser(String username) {
