@@ -1,8 +1,8 @@
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
 
 //Cliente
 public class MessagingAppRMIClient extends UnicastRemoteObject implements CallbacksListener{
@@ -76,7 +76,12 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
                         String user_newUser = st.nextToken();
 						String pass_newUser = st.nextToken();
 						String group_newUser = "";
-						servicioMsg.newUser(user_newUser, pass_newUser);
+						if(servicioMsg.newUser(user_newUser, pass_newUser)) {
+							System.out.println("Usuario creado con exito!");
+						}
+						else {
+							System.out.println("El usuario ya existe, escoja otro username");
+						}
                         if(st.hasMoreTokens()) {
 							group_newUser = st.nextToken();
 							servicioMsg.joinGroup(user_newUser, group_newUser);
@@ -84,13 +89,13 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
                         break;
 					case "SendMsg":
 						String text_sendMsg = "";
-						//Enviar mensaje a un grupo
+						//Send message to a group
                         if(st.nextToken() == "-g") {
 							String group_sendMsg = st.nextToken();
 							text_sendMsg = st.nextToken();
 							servicioMsg.sendMsgGroup(client_username, group_sendMsg, text_sendMsg);
 						}
-						//Enviar mensaje a un usuario
+						//Send message to a user
 						else {
 							String user_sendMsg = st.nextToken();
 							text_sendMsg = st.nextToken();

@@ -51,20 +51,18 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		return false;
 	}
 
-    public void newUser(String username, String password) throws RemoteException {
+    public boolean newUser(String username, String password) throws RemoteException {
 		User new_user = new User(username, password);
 		//Check if the user exists
 		if(getUser(username) == null) {
 			//Add the user to users database
 			this.users_db.add(new_user);
+			return true;
 		}
-		else {
-			//User already exists
-			System.out.println("User already exists, choose another username.");
-		}
+		return false;
 	}
 
-	public void sendMsgUser(String sender, String receiver, String message) throws RemoteException {
+	public boolean sendMsgUser(String sender, String receiver, String message) throws RemoteException {
 		Message new_message = new Message(sender, receiver, message);
 		User aux_user = getUser(receiver);
 		//Check if the receiver exists
@@ -73,41 +71,31 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 			if(aux_user.getStatus() == true) {
 				//Send the message
 			}
-			else {
-				System.out.println("User is offline, the message could not be sent");
-			}
 		}
-		else {
-			System.out.println("User doesn't exist, the message could not be sent");
-		}	
+		return false;
 	}
 
-	public void sendMsgGroup(String sender, String group, String message) throws RemoteException {
+	public boolean sendMsgGroup(String sender, String group, String message) throws RemoteException {
 		Message new_message = new Message(sender, group, message);
 		Group aux_group = getGroup(group);
 		//Check if group exists
 		if(aux_group != null) {
 			//Send the message
 		}
-		else {
-			System.out.println("Group doesn't exist, the message could not be sent");
-		}
+		return false;
 	}
 
-    public void newGroup(String group) throws RemoteException {
+    public boolean newGroup(String group) throws RemoteException {
 		Group new_group = new Group(group);
 		//Check if the group exist
 		if(getGroup(group) != null) {
 			//Add the group to the groups database
 			this.groups_db.add(new_group);
 		}
-		else {
-			//Group already exists
-			System.out.println("Group already exists, choose another group name.");
-		}
+		return false;
 	}
 
-    public void joinGroup(String username, String group) throws RemoteException {
+    public boolean joinGroup(String username, String group) throws RemoteException {
 		//Check if the user or group exist
 		User aux_user = getUser(username);
 		Group aux_group = getGroup(group);
@@ -116,17 +104,12 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 			if(aux_user.getStatus() == true) {
 				aux_user.joinGroup(aux_group);
 			}
-			else {
-				System.out.println("User is offline, couldn't join the group.");
-			}
 		}
-		else {
-			System.out.println("User or group does not exist.");
-		}
+		return false;
 	}
 
-	public void exit(String username) throws RemoteException {
-	
+	public boolean exit(String username) throws RemoteException {
+		return true;
 	}
 
 	public User getUser(String username) {
