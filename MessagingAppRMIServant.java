@@ -82,7 +82,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		Group aux_group = getGroup(group);
 		//Check if group exists
 		if(aux_group != null) {
-			//Send the message
+			//Send the message to all group members through callback method
 			notifyGroupMessage(group, new_message);
 			return true;
 		}
@@ -181,10 +181,38 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 	}
 
 	public void notifyUserMessage(String username, Message msg) {
-
+		Iterator<User> users_itr = users_db.iterator();
+		int index = 0;
+		while(users_itr.hasNext()) {
+			User nextUsr = users_itr.next();
+			if(nextUsr.username.equals(username)) {
+				try{
+					nextUsr.userListener.sendUserMessage(msg);
+				}
+				catch (RemoteException re) {
+					nextUsr.removeListener();
+					users_db.set(index, nextUsr);
+				}
+			}
+			++index;
+		}
 	}
 
 	public void notifyGroupMessage(String group, Message msg) {
-
+		Iterator<User> users_itr = users_db.iterator();
+		int index = 0;
+		while(users_itr.hasNext()) {
+			User nextUsr = users_itr.next();
+			if(nextUsr.checkIfBelongsGroup(group)) {
+				try{
+					nextUsr.userListener.sendGroupMessage(msg);
+				}
+				catch (RemoteException re) {
+					nextUsr.removeListener();
+					users_db.set(index, nextUsr);
+				}
+			}
+			++index;
+		}
 	}
 }
