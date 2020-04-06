@@ -69,7 +69,9 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		if(aux_user != null) {
 			//Check if the receiver is online
 			if(aux_user.getStatus() == true) {
-				//Send the message
+				//Send the message to the user through callback method
+				notifyUserMessage(receiver, new_message);
+				return true;
 			}
 		}
 		return false;
@@ -81,6 +83,8 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		//Check if group exists
 		if(aux_group != null) {
 			//Send the message
+			notifyGroupMessage(group, new_message);
+			return true;
 		}
 		return false;
 	}
@@ -91,18 +95,22 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		if(getGroup(group) != null) {
 			//Add the group to the groups database
 			this.groups_db.add(new_group);
+			//Notify group creation to all users
+			notifyGroupCreated(group);
+			return true;
 		}
 		return false;
 	}
 
     public boolean joinGroup(String username, String group) throws RemoteException {
-		//Check if the user or group exist
 		User aux_user = getUser(username);
 		Group aux_group = getGroup(group);
+		//Check if the user and group exists
 		if(aux_user != null && aux_group != null) {
 			//Check if user is online
 			if(aux_user.getStatus() == true) {
 				aux_user.joinGroup(aux_group);
+				return true;
 			}
 		}
 		return false;
@@ -112,6 +120,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		return true;
 	}
 
+	//Auxiliar methods for client
 	public User getUser(String username) {
 		Iterator<User> users_itr = users_db.iterator();
 		while(users_itr.hasNext()) {
@@ -153,5 +162,29 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 			}
 			++index;
 		}
+	}
+
+	public void notifyGroupCreated(String group) {
+		Iterator<User> users_itr = users_db.iterator();
+		int index = 0;
+		while(users_itr.hasNext()) {
+			User nextUsr = users_itr.next();
+			try{
+				nextUsr.userListener.groupCreated(group);
+			}
+			catch (RemoteException re) {
+				nextUsr.removeListener();
+				users_db.set(index, nextUsr);
+			}
+			++index;
+		}
+	}
+
+	public void notifyUserMessage(String username, Message msg) {
+
+	}
+
+	public void notifyGroupMessage(String group, Message msg) {
+
 	}
 }

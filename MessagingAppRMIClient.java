@@ -51,7 +51,7 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 								client_status = true;
 							}
 							else {
-								System.out.println("Error! Usuario o contraseña incorrectos.");
+								System.out.println("Error! Usuario o contraseña incorrectos!");
 							}
 						}
 						else {
@@ -69,7 +69,7 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 							}
 						}
 						else {
-							System.out.println("Error! No estas conectado al sistema");
+							System.out.println("Error! No estas conectado en el sistema!");
 						}
                         break;
                     case "NewUser":
@@ -80,11 +80,16 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 							System.out.println("Usuario creado con exito!");
 						}
 						else {
-							System.out.println("El usuario ya existe, escoja otro username");
+							System.out.println("Error! El usuario ya existe, escoja otro username!");
 						}
                         if(st.hasMoreTokens()) {
 							group_newUser = st.nextToken();
-							servicioMsg.joinGroup(user_newUser, group_newUser);
+							if(servicioMsg.joinGroup(user_newUser, group_newUser)) {
+								System.out.println("Te has subscrito al grupo " + group_newUser);
+							}
+							else {
+								System.out.println("Error! El grupo no existe!");
+							}
 						}
                         break;
 					case "SendMsg":
@@ -93,22 +98,42 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
                         if(st.nextToken() == "-g") {
 							String group_sendMsg = st.nextToken();
 							text_sendMsg = st.nextToken();
-							servicioMsg.sendMsgGroup(client_username, group_sendMsg, text_sendMsg);
+							if(servicioMsg.sendMsgGroup(client_username, group_sendMsg, text_sendMsg)) {
+								System.out.println("Mensaje enviado correctamente!");
+							}
+							else {
+								System.out.println("Error! El grupo no existe!");
+							}
 						}
 						//Send message to a user
 						else {
 							String user_sendMsg = st.nextToken();
 							text_sendMsg = st.nextToken();
-							servicioMsg.sendMsgUser(client_username, user_sendMsg, text_sendMsg);
+							if(servicioMsg.sendMsgUser(client_username, user_sendMsg, text_sendMsg)) {
+								System.out.println("Mensaje enviado correctamente!");
+							}
+							else {
+								System.out.println("Error! El usuario esta desconectado o no existe!");
+							}
 						}
 						break;
                     case "NewGroup":
 						String group_newGroup = st.nextToken();
-						servicioMsg.newGroup(group_newGroup);
+						if(servicioMsg.newGroup(group_newGroup)) {
+							System.out.println("Grupo creado con exito!");
+						}
+						else {
+							System.out.println("Error! El grupo ya existe, escoja otro groupname");
+						}
                         break;
                     case "JoinGroup":
 						String group_joinGroup = st.nextToken();
-						servicioMsg.joinGroup(client_username, group_joinGroup);
+						if(servicioMsg.joinGroup(client_username, group_joinGroup)) {
+							System.out.println("Te has subscrito al grupo " + group_joinGroup);
+						}
+						else {
+							System.out.println("Error! El grupo no existe!");
+						}
                         break;
                     case "Exit":
 						break;
