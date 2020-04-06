@@ -18,15 +18,13 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		while(users_itr.hasNext()) {
 			User nextUser = users_itr.next();
 			if(nextUser.username.equals(username) && nextUser.password.equals(password)) {
-				System.out.println("Usuario correcto");
+				//Set user status and listener
 				nextUser.setStatus(true);
 				nextUser.setListener(listener);
 				users_db.set(index, nextUser);
+				//Notify the login to all users
 				notifyLogin(username);
 				return true;
-			}
-			else {
-				System.out.println("El usuario no existe");
 			}
 			++index;
 		}
@@ -34,21 +32,21 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 	}
 
     public boolean logout(String username) throws RemoteException {
-		User aux_user = getUser(username);
-		//Check if the user exists
-		if(aux_user != null) {
-			//Check if the user is online
-			if(aux_user.getStatus() ==  true) {
-				aux_user.setStatus(false);
-				
-				return true;
+		Iterator<User> users_itr = users_db.iterator();
+		int index = 0;
+		while(users_itr.hasNext()) {
+			User nextUser = users_itr.next();
+			if(nextUser.username.equals(username)) {
+				//Check if the user is online
+				if(nextUser.getStatus() == true) {
+					//Set user status and listener
+					nextUser.setStatus(false);
+					nextUser.removeListener();
+					users_db.set(index, nextUser);
+					return true;
+				}
 			}
-			else {
-				System.out.println("User is already offline");
-			}
-		}
-		else {
-			System.out.println("User does not exist");
+			++index;
 		}
 		return false;
 	}

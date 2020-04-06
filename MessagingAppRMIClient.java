@@ -1,12 +1,14 @@
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 //Cliente
 public class MessagingAppRMIClient extends UnicastRemoteObject implements CallbacksListener{
-	
-	private static MessagingAppRMI remote_object;
+	//Init variables
 	private static final long serialVersionUID = 1;
+	//Constructor
 	public MessagingAppRMIClient() throws RemoteException {};
 	public static void main(String args[]) {
 		System.out.println("Iniciando el cliente");
@@ -29,10 +31,10 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
                     scan.close();
                 }
 			});
-			//Client status
-			String client_username = "";
+			//Client username and status
+			String client_username = null;
 			Boolean client_status = false;
-			CallbacksListener client_listener;
+			//Listener for server callbacks
 			MessagingAppRMIClient client = new MessagingAppRMIClient();
 			while(true) {
 				String command = scan.nextLine();
@@ -43,15 +45,31 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
                     case "Login":
                         String user_login = st.nextToken();
 						String pass_login = st.nextToken();
-						if(servicioMsg.login(user_login, pass_login, client)) {
-							client_username = user_login;
-							client_status = true;
+						if(!client_status) {
+							if(servicioMsg.login(user_login, pass_login, client)) {
+								client_username = user_login;
+								client_status = true;
+							}
+							else {
+								System.out.println("Error! Usuario o contraseña incorrectos.");
+							}
+						}
+						else {
+							System.out.println("Error! Ya estas conectado con el usuario: " + client_username);
 						}
                         break;
 					case "Logout":
-						if(servicioMsg.logout(client_username)) {
-							client_username = "";
-							client_status = false;
+						if(client_status) {
+							if(servicioMsg.logout(client_username)) {
+								client_username = "";
+								client_status = false;
+							}
+							else {
+								System.out.println("Error! No se ha podido desconectar el usuario: " + client_username);
+							}
+						}
+						else {
+							System.out.println("Error! No estas conectado al sistema");
 						}
                         break;
                     case "NewUser":
@@ -103,7 +121,29 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 		}		
 	}
 
+	//Callback methods
 	public void userConnected(String username) throws RemoteException {
 		System.out.println("El usuario " + username + " se ha conectado.");
 	}
+
+	public void userDisconnected(String username) throws RemoteException {
+		System.out.println("El usuario " + username + " se ha desconectado.");
+	};
+
+    public void groupCreated(String group) throws RemoteException {
+		System.out.println("Se ha creado el grupo '" + group + "' en el sistema.");
+		System.out.println("Para unirte al grupo usa el comando: JoinGroup " + group);
+	};
+
+    public void sendUserMessage(Message msg) throws RemoteException {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		String dateString = dateFormat.format(msg.time);
+		System.out.println("[" + dateString + "] Mensaje de " + msg.sender + ": " + msg.text);
+	};
+
+    public void sendGroupMessage(Message msg) throws RemoteException {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		String dateString = dateFormat.format(msg.time);
+		System.out.println("[" + dateString + "] Mensaje del grupo " + msg.receiver + " enviado por " + msg.sender + ": " + msg.text);
+	};
 }

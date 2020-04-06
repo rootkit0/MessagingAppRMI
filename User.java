@@ -29,8 +29,14 @@ public class User {
         this.userGroups.add(group);
     }
 
-    public ArrayList<Group> getGroups() {
-        return this.userGroups;
+    public boolean checkIfBelongsGroup(String group) {
+        Iterator<Group> group_itr = userGroups.iterator();
+        while(group_itr.hasNext()) {
+            if(group_itr.next().group.equals(group)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setListener(CallbacksListener listener) {
