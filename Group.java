@@ -1,5 +1,3 @@
-import java.util.*;
-
 public class Group {
     //Init variables
     public String group;
