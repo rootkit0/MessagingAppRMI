@@ -40,7 +40,7 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 				while(st.hasMoreTokens()) {
 					String command_type = st.nextToken();
 					//Treat cases depending on command type
-					if(command_type == "Login") {
+					if(command_type.equals("Login")) {
 						try {
 							String user_login = st.nextToken();
 							String pass_login = st.nextToken();
@@ -61,7 +61,7 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 							System.out.println("Sintaxis incorrecta! Uso: Login <username> <password>");
 						}
 					}
-					else if(command_type == "Logout") {
+					else if(command_type.equals("Logout")) {
 						try {
 							if(client_status) {
 								if(servicioMsg.logout(client_username)) {
@@ -81,7 +81,7 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 							System.out.println("Sintaxis incorrecta! Uso: Logout");
 						}
 					}
-					else if(command_type == "NewUser") {
+					else if(command_type.equals("NewUser")) {
 						try {
 							String user_newUser = st.nextToken();
 							String pass_newUser = st.nextToken();
@@ -106,22 +106,37 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 							System.out.println("Sintaxis incorrecta! Uso: NewUser <username> <password> <group>");
 						}
 					}
-					else if(command_type == "SendMsg") {
+					else if(command_type.equals("SendMsg")) {
 						try {
-							String user_sendMsg = st.nextToken();
-							String text_sendMsg = st.nextToken();
-							if(servicioMsg.sendMsgUser(client_username, user_sendMsg, text_sendMsg)) {
-								System.out.println("Mensaje enviado correctamente!");
+							String first_token = st.nextToken();
+							//Send msg to group
+							if(first_token.equals("-g")) {
+								String group_sendmsg = st.nextToken();
+								String msg_gsendmsg = st.nextToken();
+								if(servicioMsg.sendMsgGroup(group_sendmsg, group_sendmsg, msg_gsendmsg)) {
+									System.out.println("Mensaje enviado correctamente");
+								}
+								else {
+									System.out.println("Error! El usuario esta desconectado o no existe!");
+								}
 							}
+							//Send msg to user
 							else {
-								System.out.println("Error! El usuario esta desconectado o no existe!");
+								String user_sendmsg = first_token;
+								String msg_usendmsg = st.nextToken();
+								if(servicioMsg.sendMsgUser(client_username, user_sendmsg, msg_usendmsg)) {
+									System.out.println("Mensaje enviado correctamente");
+								}
+								else {
+									System.out.println("Error! El grupo no existe!");
+								}
 							}
 						}
 						catch(Exception e) {
-							System.out.println("Sintaxis incorrecta! Uso: SendMsg <usuario> <mensaje>");
+							System.out.println("Sintaxis incorrecta! Uso: SendMsg <usuario> <mensaje> o SendMsg -g <grupo> <mensaje>");
 						}
 					}
-					else if(command_type == "NewGroup") {
+					else if(command_type.equals("NewGroup")) {
 						try {
 							String group_newGroup = st.nextToken();
 							if(servicioMsg.newGroup(group_newGroup)) {
@@ -135,7 +150,7 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 							System.out.println("Sintaxis incorrecta! Uso: NewGroup <groupname>");
 						}
 					}
-					else if(command_type == "JoinGroup") {
+					else if(command_type.equals("JoinGroup")) {
 						try {
 							String group_joinGroup = st.nextToken();
 							if(servicioMsg.joinGroup(client_username, group_joinGroup)) {
@@ -149,7 +164,7 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 							System.out.println("Sintaxis incorrecta! Uso: JoinGroup <groupname>");
 						}
 					}
-					else if(command_type == "Exit") {
+					else if(command_type.equals("Exit")) {
 						System.gc();
 						System.exit(0);
 					}
@@ -184,11 +199,11 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 		System.out.println("Para unirte al grupo usa el comando: JoinGroup " + group);
 	};
 
-    public void sendUserMessage(Message msg) throws RemoteException {
-		System.out.println("Mensaje de " + msg.sender + ": " + msg.text);
+    public void sendUserMessage(String sender, String msg, Date time) throws RemoteException {
+		System.out.println("[" + time + "]" + " Nuevo mensaje de " + sender + ": " + msg);
 	};
 
-    public void sendGroupMessage(Message msg) throws RemoteException {
-		System.out.println("Mensaje del grupo " + msg.receiver + " enviado por " + msg.sender + ": " + msg.text);
+    public void sendGroupMessage(String group, String msg, Date time) throws RemoteException {
+		System.out.println("[" + time + "]" + " Nuevo mensaje del grupo " + group + ": " + msg);
 	};
 }

@@ -21,6 +21,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 				//Set user status and listener
 				nextUser.setStatus(true);
 				nextUser.setListener(listener);
+				//Update the user in the arraylist
 				users_db.set(index, nextUser);
 				//Notify the login to all users
 				notifyLogin(username);
@@ -42,7 +43,10 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 					//Set user status and listener
 					nextUser.setStatus(false);
 					nextUser.removeListener();
+					//Update the user in the arraylist
 					users_db.set(index, nextUser);
+					//Notify the logout to all users
+					notifyLogout(username);
 					return true;
 				}
 			}
@@ -92,7 +96,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
     public boolean newGroup(String group) throws RemoteException {
 		Group new_group = new Group(group);
 		//Check if the group exist
-		if(getGroup(group) != null) {
+		if(getGroup(group) == null) {
 			//Add the group to the groups database
 			this.groups_db.add(new_group);
 			//Notify group creation to all users
@@ -116,9 +120,9 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		return false;
 	}
 
-	public boolean exit(String username) throws RemoteException {
+	public boolean leaveGroup(String username, String group) throws RemoteException {
 		return true;
-	}
+	};
 
 	//Auxiliar methods for client
 	public User getUser(String username) {
@@ -164,6 +168,22 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		}
 	}
 
+	public void notifyLogout(String username) {
+		Iterator<User> users_itr = users_db.iterator();
+		int index = 0;
+		while(users_itr.hasNext()) {
+			User nextUsr = users_itr.next();
+			try{
+				nextUsr.userListener.userDisconnected(username);
+			}
+			catch (RemoteException re) {
+				nextUsr.removeListener();
+				users_db.set(index, nextUsr);
+			}
+			++index;
+		}
+	}
+
 	public void notifyGroupCreated(String group) {
 		Iterator<User> users_itr = users_db.iterator();
 		int index = 0;
@@ -187,7 +207,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 			User nextUsr = users_itr.next();
 			if(nextUsr.username.equals(username)) {
 				try{
-					nextUsr.userListener.sendUserMessage(msg);
+					nextUsr.userListener.sendUserMessage(msg.sender, msg.text, msg.time);
 				}
 				catch (RemoteException re) {
 					nextUsr.removeListener();
@@ -205,7 +225,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 			User nextUsr = users_itr.next();
 			if(nextUsr.checkIfBelongsGroup(group)) {
 				try{
-					nextUsr.userListener.sendGroupMessage(msg);
+					nextUsr.userListener.sendGroupMessage(msg.sender, msg.text, msg.time);
 				}
 				catch (RemoteException re) {
 					nextUsr.removeListener();
