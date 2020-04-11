@@ -119,11 +119,7 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 		}
 		return false;
 	}
-
-	public boolean leaveGroup(String username, String group) throws RemoteException {
-		return true;
-	};
-
+	
 	//Auxiliar methods for client
 	public User getUser(String username) {
 		Iterator<User> users_itr = users_db.iterator();

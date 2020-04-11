@@ -10,6 +10,10 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 	public MessagingAppRMIClient() throws RemoteException { };
 	public static void main(String args[]) {
 		System.out.println("Iniciando el cliente");
+		System.setProperty("java.security.policy", "./client.policy");
+		if (System.getSecurityManager() == null) {
+			System.setSecurityManager(new SecurityManager());
+		}
 		try {
 			// Comprobar si se ha especificado la direccion del servicio de registros
 			String registry = "localhost";
@@ -67,7 +71,6 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 								if(servicioMsg.logout(client_username)) {
 									client_username = "";
 									client_status = false;
-									System.out.println("Te has desconectado");
 								}
 								else {
 									System.out.println("Error! No se ha podido desconectar al usuario: " + client_username);
@@ -117,7 +120,7 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 									System.out.println("Mensaje enviado correctamente");
 								}
 								else {
-									System.out.println("Error! El usuario esta desconectado o no existe!");
+									System.out.println("Error! El grupo no existe!");
 								}
 							}
 							//Send msg to user
@@ -128,7 +131,7 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 									System.out.println("Mensaje enviado correctamente");
 								}
 								else {
-									System.out.println("Error! El grupo no existe!");
+									System.out.println("Error! El usuario esta desconectado o no existe!");
 								}
 							}
 						}
@@ -165,6 +168,7 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 						}
 					}
 					else if(command_type.equals("Exit")) {
+						System.out.println("Cerrando la aplicacion");
 						System.gc();
 						System.exit(0);
 					}
@@ -195,15 +199,15 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 	};
 
     public void groupCreated(String group) throws RemoteException {
-		System.out.println("Se ha creado el grupo " + group);
-		System.out.println("Para unirte al grupo usa el comando: JoinGroup " + group);
+		System.out.println("Se ha creado el grupo " + group + ".");
+		System.out.println("Para unirte, usa el comando: JoinGroup " + group + ".");
 	};
 
     public void sendUserMessage(String sender, String msg, Date time) throws RemoteException {
-		System.out.println("[" + time + "]" + " Nuevo mensaje de " + sender + ": " + msg);
+		System.out.println("[" + time + "]" + " Nuevo mensaje de " + sender + ": " + msg + ".");
 	};
 
     public void sendGroupMessage(String group, String msg, Date time) throws RemoteException {
-		System.out.println("[" + time + "]" + " Nuevo mensaje del grupo " + group + ": " + msg);
+		System.out.println("[" + time + "]" + " Nuevo mensaje del grupo " + group + ": " + msg + ".");
 	};
 }

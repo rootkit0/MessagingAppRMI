@@ -5,6 +5,11 @@ import java.rmi.server.*;
 public class MessagingAppRMIServer {
 	public static void main(String args[]) {
 		System.out.println("Iniciando el servidor");
+		//Init security server and set policy file
+		System.setProperty("java.security.policy", "./server.policy");
+		if (System.getSecurityManager() == null) {
+			System.setSecurityManager(new SecurityManager());
+		}
 		try {
 			// Cargar el servicio.
 			MessagingAppRMIServant servicioMsg = new MessagingAppRMIServant();
