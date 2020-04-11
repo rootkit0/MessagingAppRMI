@@ -168,9 +168,17 @@ public class MessagingAppRMIClient extends UnicastRemoteObject implements Callba
 						}
 					}
 					else if(command_type.equals("Exit")) {
-						System.out.println("Cerrando la aplicacion");
-						System.gc();
-						System.exit(0);
+						try {
+							if(client_status) {
+								servicioMsg.logout(client_username);
+							}
+							System.out.println("Cerrando la aplicacion");
+							System.gc();
+							System.exit(0);
+						}
+						catch(Exception e) {
+							System.out.println("Sintaxis incorrecta! Uso: Exit");
+						}
 					}
 					else {
 						System.out.println("Introduce un comando valido!");

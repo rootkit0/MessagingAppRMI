@@ -40,9 +40,8 @@ public class MessagingAppRMIServant extends UnicastRemoteObject implements Messa
 			if(nextUser.username.equals(username)) {
 				//Check if the user is online
 				if(nextUser.getStatus() == true) {
-					//Set user status and listener
+					//Set user status
 					nextUser.setStatus(false);
-					nextUser.removeListener();
 					//Update the user in the arraylist
 					users_db.set(index, nextUser);
 					//Notify the logout to all users
